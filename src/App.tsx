@@ -1,30 +1,42 @@
 import './App.css'
+import { useState } from 'react'
 import { ChatInput } from './components/ChatInput'
-import { ChatMessage } from './components/ChatMessage'
+import { ChatMessages } from './components/ChatMessages'
 
 function App() {
 
+  const [chatMessages, setChatMessages] = useState([
+    {
+      message: "hello Chatbot",
+      sender: "user",
+      key: "1",
+    },
+    {
+      message: "Hello! How can I help you today ?",
+      sender: "robot",
+      key: "2",
+    },
+    {
+      message: "Can you tell me todays date ?",
+      sender: "user",
+      key: "3",
+    },
+    {
+      message: "Today is November 4 2025",
+      sender: "robot",
+      key: "4",
+    },
+  ]);
+
   return (
     <>
-      <ChatInput />
-      <ChatMessage
-        message="hello Chatbot"
-        sender="user"
+      <ChatInput 
+        chatMessages={chatMessages}
+        setChatMessages={setChatMessages}
       />
 
-      <ChatMessage
-        message="Hello! How can I help you today ?"
-        sender="robot"
-      />
-
-      <ChatMessage
-        message="Can you tell me todays date ?"
-        sender="user"
-      />
-
-      <ChatMessage
-        message="Today is November 4 2025"
-        sender="robot"
+      <ChatMessages 
+        chatMessages={chatMessages}
       />
     </>
   )

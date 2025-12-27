@@ -1,9 +1,9 @@
-type ChatMessages = {
-    message: string | null ,
-    sender: string | null,
+type ChatMessage = {
+    message: string | null;
+    sender: string | null;
 }
 
-export function ChatMessage({ message, sender } : ChatMessages) {
+export function ChatMessage({ message, sender } : ChatMessage) {
 
     return (
         <div>
