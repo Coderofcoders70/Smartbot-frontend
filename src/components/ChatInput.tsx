@@ -2,38 +2,48 @@ import { useState } from "react";
 import { Chatbot } from "supersimpledev";
 
 interface ChatMessage {
+    id: string;
     message: string;
     sender: "user" | "robot";
-    key: string;
 }
 
-export function ChatInput({ chatMessages, setChatMessages }: { chatMessages: ChatMessage[]; setChatMessages: (messages: ChatMessage[]) => void }) {
+type ChatInputProps = {
+    chatMessages: ChatMessage[]
+    setChatMessages : (chatMessages: ChatMessage[]) => void;
+}
 
+export function ChatInput({ chatMessages, setChatMessages }: ChatInputProps) {
     const [inputText, setInputText] = useState('');
 
     function saveInputText(e: React.ChangeEvent<HTMLInputElement>) {
         setInputText(e.target.value);
     }
 
-    function sendMessage() {
-        const newChatMessages = [
+    async function sendMessage() {
+
+        const newChatMessages: ChatMessage[] = [
             ...chatMessages,
             {
+                id: crypto.randomUUID(),
                 message: inputText,
                 sender: "user",
-                key: crypto.randomUUID(),
-            }
-        ]
+            },
+        ];
 
-        const response = Chatbot.getResponse(inputText);
+        setChatMessages(newChatMessages);
+
+        const response = await Chatbot.getResponseAsync(inputText);
         setChatMessages([
-            ...newChatMessages,
+            ...newChatMessages.filter((msg) => msg.id !== "loading")
+                .slice(0, newChatMessages.length - 1),
             {
+                id: crypto.randomUUID(),
                 message: response,
                 sender: "robot",
-                key: crypto.randomUUID(),
             }
-        ])
+        ]);
+
+        setInputText('');
     }
 
     return (

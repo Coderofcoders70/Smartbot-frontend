@@ -1,41 +1,32 @@
 import './App.css'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ChatInput } from './components/ChatInput'
 import { ChatMessages } from './components/ChatMessages'
 
 function App() {
 
-  const [chatMessages, setChatMessages] = useState([
-    {
-      message: "hello Chatbot",
-      sender: "user",
-      key: "1",
-    },
-    {
-      message: "Hello! How can I help you today ?",
-      sender: "robot",
-      key: "2",
-    },
-    {
-      message: "Can you tell me todays date ?",
-      sender: "user",
-      key: "3",
-    },
-    {
-      message: "Today is November 4 2025",
-      sender: "robot",
-      key: "4",
-    },
-  ]);
+  const [chatMessages, setChatMessages] = useState(() => {
+    try {
+      const storedMessages = localStorage.getItem('messages');
+      return storedMessages ? JSON.parse(storedMessages) : [];
+    } catch (e) {
+      console.error("Error parsing messages from localStorage:", e);
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('messages', JSON.stringify(chatMessages));
+  }, [chatMessages]);
 
   return (
     <>
-      <ChatInput 
+      <ChatInput
         chatMessages={chatMessages}
         setChatMessages={setChatMessages}
       />
 
-      <ChatMessages 
+      <ChatMessages
         chatMessages={chatMessages}
       />
     </>
