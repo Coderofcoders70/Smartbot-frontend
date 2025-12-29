@@ -1,19 +1,37 @@
-type ChatMessage = {
-    message: string | null;
-    sender: string | null;
+import dayjs from 'dayjs';
+import './ChatMessage.css'
+import UserProfileImage from '../assets/user.png'
+import RobotProfileImage from '../assets/robot.png'
+
+type ChatMessageProps = {
+    message: string;
+    sender: string;
+    time?: string | number | Date;
 }
 
-export function ChatMessage({ message, sender } : ChatMessage) {
+export function ChatMessage({ message, sender, time }: ChatMessageProps){
 
     return (
-        <div>
+        <div className={sender === "user" ? "chat-message-user" : "chat-message-robot"}>
             {sender === 'robot' && (
-                <img src="src/assets/robot.png" width="50" />
+                <img src={RobotProfileImage} className="chat-message-profile" alt="Robot profile" />
             )}
-            {message}
+            
+            <div className="chat-message-text">
+                {message}
+
+                {time && (
+                    <div className='chat-message-time'>
+                        {dayjs(time).format('h:mma')}
+                    </div>
+                )}
+            </div> 
+
             {sender === 'user' && (
-                <img src="src/assets/user.png" width="50" />
+                <img src={UserProfileImage} className="chat-message-profile" alt="User profile" />
             )}
+            
         </div>
+
     );
 }

@@ -1,7 +1,8 @@
-import React, { useState, type JSX } from "react";
-import { Chatbot } from "supersimpledev";
+import './ChatInput.css'
+import { Chatbot } from 'supersimpledev'
+import { useState, type JSX } from 'react'
 
-interface ChatMessage {
+type ChatMessage = {
     id: string;
     message: string | JSX.Element;
     sender: "user" | "robot";
@@ -11,23 +12,23 @@ type ChatInputProps = {
     chatMessages: ChatMessage[]
     setChatMessages: (chatMessages: ChatMessage[]) => void;
     isLoading: boolean;
-    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
+    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoading }: ChatInputProps) {
+function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoading }: ChatInputProps) {
     const [inputText, setInputText] = useState('');
 
     function saveInputText(e: React.ChangeEvent<HTMLInputElement>) {
         setInputText(e.target.value);
     }
 
-    setIsLoading(true);
-
     async function sendMessage() {
 
         if (isLoading || inputText.trim() === "") {
             return alert("Please check again");
         }
+
+        setIsLoading(true);
 
         const newChatMessages: ChatMessage[] = [
             ...chatMessages,
@@ -74,18 +75,20 @@ export function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoadi
     }
 
     return (
-        <>
+        <div className="chat-input-container">
             <input
-                type="text"
                 placeholder="Send a message to the Chatbot"
+                size={30}
                 onChange={saveInputText}
                 onKeyDown={pressEnter}
                 value={inputText}
-                size={30}
+                className="chat-input"
             />
 
             <button className="send-button" onClick={sendMessage}>Send</button>
             <button className='clear-button' onClick={clearMessages}>Clear</button>
-        </>
+        </div>
     );
 }
+
+export default ChatInput;
