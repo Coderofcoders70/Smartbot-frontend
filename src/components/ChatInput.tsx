@@ -38,7 +38,7 @@ export function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoadi
             },
             {
                 id: "loading",
-                message: <img src="https://supersimple.dev/images/loading-spinner.gif" />,
+                message: <img className="loadSpinner" src="https://supersimple.dev/images/loading-spinner.gif" />,
                 sender: "robot",
             }
         ];
