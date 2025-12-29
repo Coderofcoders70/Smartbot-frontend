@@ -60,21 +60,32 @@ export function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoadi
         setIsLoading(false);
     }
 
+    function pressEnter(e: React.KeyboardEvent<HTMLInputElement>) {
+        if (e.key === 'Enter') {
+            sendMessage()
+        }
+        else if (e.key === 'Escape') {
+            setInputText('');
+        }
+    }
+
+    function clearMessages() {
+        setChatMessages([]);
+    }
+
     return (
         <>
             <input
                 type="text"
                 placeholder="Send a message to the Chatbot"
                 onChange={saveInputText}
+                onKeyDown={pressEnter}
                 value={inputText}
                 size={30}
             />
 
-            <button
-                onClick={sendMessage}
-            >
-                Send
-            </button>
+            <button className="send-button" onClick={sendMessage}>Send</button>
+            <button className='clear-button' onClick={clearMessages}>Clear</button>
         </>
     );
 }
