@@ -5,6 +5,7 @@ import { ChatMessages } from './components/ChatMessages'
 
 function App() {
 
+  const [isLoading, setIsLoading] = useState(false);
   const [chatMessages, setChatMessages] = useState(() => {
     try {
       const storedMessages = localStorage.getItem('messages');
@@ -24,6 +25,8 @@ function App() {
       <ChatInput
         chatMessages={chatMessages}
         setChatMessages={setChatMessages}
+        isLoading={isLoading}
+        setIsLoading={setIsLoading}
       />
 
       <ChatMessages

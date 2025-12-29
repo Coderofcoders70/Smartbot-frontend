@@ -1,25 +1,33 @@
-import { useState } from "react";
+import React, { useState, type JSX } from "react";
 import { Chatbot } from "supersimpledev";
 
 interface ChatMessage {
     id: string;
-    message: string;
+    message: string | JSX.Element;
     sender: "user" | "robot";
 }
 
 type ChatInputProps = {
     chatMessages: ChatMessage[]
-    setChatMessages : (chatMessages: ChatMessage[]) => void;
+    setChatMessages: (chatMessages: ChatMessage[]) => void;
+    isLoading: boolean;
+    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export function ChatInput({ chatMessages, setChatMessages }: ChatInputProps) {
+export function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoading }: ChatInputProps) {
     const [inputText, setInputText] = useState('');
 
     function saveInputText(e: React.ChangeEvent<HTMLInputElement>) {
         setInputText(e.target.value);
     }
 
+    setIsLoading(true);
+
     async function sendMessage() {
+
+        if (isLoading || inputText.trim() === "") {
+            return alert("Please check again");
+        }
 
         const newChatMessages: ChatMessage[] = [
             ...chatMessages,
@@ -28,6 +36,11 @@ export function ChatInput({ chatMessages, setChatMessages }: ChatInputProps) {
                 message: inputText,
                 sender: "user",
             },
+            {
+                id: "loading",
+                message: <img src="https://supersimple.dev/images/loading-spinner.gif" />,
+                sender: "robot",
+            }
         ];
 
         setChatMessages(newChatMessages);
@@ -44,6 +57,7 @@ export function ChatInput({ chatMessages, setChatMessages }: ChatInputProps) {
         ]);
 
         setInputText('');
+        setIsLoading(false);
     }
 
     return (
@@ -59,7 +73,7 @@ export function ChatInput({ chatMessages, setChatMessages }: ChatInputProps) {
             <button
                 onClick={sendMessage}
             >
-            Send
+                Send
             </button>
         </>
     );
