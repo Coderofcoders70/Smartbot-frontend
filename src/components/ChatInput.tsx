@@ -8,15 +8,21 @@ type ChatMessage = {
     sender: "user" | "robot";
 }
 
+type UserProfile = {
+    name: string | null;
+}
+
 type ChatInputProps = {
     chatMessages: ChatMessage[]
     setChatMessages: (chatMessages: ChatMessage[]) => void;
     isLoading: boolean;
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    userProfile: UserProfile;
+    setUserProfile: React.Dispatch<React.SetStateAction<UserProfile>>
     ensureActiveSession: () => void;
 }
 
-function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoading, ensureActiveSession }: ChatInputProps) {
+function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoading, userProfile, setUserProfile, ensureActiveSession }: ChatInputProps) {
     const [inputText, setInputText] = useState('');
 
     function saveInputText(e: React.ChangeEvent<HTMLInputElement>) {
@@ -57,6 +63,8 @@ function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoading, ens
 
         if (extractedName) {
 
+            setUserProfile({ name: extractedName });
+
             setChatMessages([
                 ...chatMessages,
                 {
@@ -78,6 +86,10 @@ function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoading, ens
 
         if (/do you remember my name/i.test(inputText) || /what is my name/i.test(inputText) || /my name/i.test(inputText) || /tell me my name/i.test(inputText)) {
 
+            const reply = userProfile.name
+                ? `Yes — you’re ${userProfile.name}.`
+                : "I don’t think you’ve told me your name yet.";
+
             setChatMessages([
                 ...chatMessages,
                 {
@@ -85,85 +97,90 @@ function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoading, ens
                     message: inputText,
                     sender: "user",
                 },
-            ]);
-
-            setInputText('');
-            setIsLoading(false);
-            return;
-        }
-
-        const newChatMessages: ChatMessage[] = [
-            ...chatMessages,
-            {
-                id: crypto.randomUUID(),
-                message: inputText,
-                sender: "user",
-            },
-            {
-                id: "loading",
-                message: <img className="loadSpinner" src="https://supersimple.dev/images/loading-spinner.gif" />,
-                sender: "robot",
-            }
-        ];
-
-        setChatMessages(newChatMessages);
-
-        async function sendMessageToBackend(message: string): Promise<string> {
-            const response = await fetch(`${BACKEND_URL}/api/chat`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
+                {
+                    id: crypto.randomUUID(),
+                    message: reply,
+                    sender: "robot",
                 },
-                body: JSON.stringify({ message }),
-            });
-
-            const data = await response.json();
-            return data.reply;
-        }
-
-        const response = await sendMessageToBackend(inputText);
-        setChatMessages([
-            ...newChatMessages.filter((msg) => msg.id !== "loading")
-                .slice(0, newChatMessages.length - 1),
-            {
-                id: crypto.randomUUID(),
-                message: response,
-                sender: "robot",
-            }
-        ]);
+            ]);
 
         setInputText('');
         setIsLoading(false);
+        return;
     }
 
-    function pressEnter(e: React.KeyboardEvent<HTMLInputElement>) {
-        if (e.key === 'Enter') {
-            sendMessage()
+    const newChatMessages: ChatMessage[] = [
+        ...chatMessages,
+        {
+            id: crypto.randomUUID(),
+            message: inputText,
+            sender: "user",
+        },
+        {
+            id: "loading",
+            message: <img className="loadSpinner" src="https://supersimple.dev/images/loading-spinner.gif" />,
+            sender: "robot",
         }
-        else if (e.key === 'Escape') {
-            setInputText('');
+    ];
+
+    setChatMessages(newChatMessages);
+
+    async function sendMessageToBackend(message: string): Promise<string> {
+        const response = await fetch(`${BACKEND_URL}/api/chat`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message }),
+        });
+
+        const data = await response.json();
+        return data.reply;
+    }
+
+    const response = await sendMessageToBackend(inputText);
+    setChatMessages([
+        ...newChatMessages.filter((msg) => msg.id !== "loading")
+            .slice(0, newChatMessages.length - 1),
+        {
+            id: crypto.randomUUID(),
+            message: response,
+            sender: "robot",
         }
+    ]);
+
+    setInputText('');
+    setIsLoading(false);
+}
+
+function pressEnter(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter') {
+        sendMessage()
     }
-
-    function clearMessages() {
-        setChatMessages([]);
+    else if (e.key === 'Escape') {
+        setInputText('');
     }
+}
 
-    return (
-        <div className="chat-input-container">
-            <input
-                placeholder="Send a message to the Chatbot"
-                size={30}
-                onChange={saveInputText}
-                onKeyDown={pressEnter}
-                value={inputText}
-                className="chat-input"
-            />
+function clearMessages() {
+    setChatMessages([]);
+}
 
-            <button className="send-button" onClick={sendMessage}>Send</button>
-            <button className='clear-button' onClick={clearMessages}>Clear</button>
-        </div>
-    );
+return (
+    <div className="chat-input-container">
+        <input
+            placeholder="Send a message to the Chatbot"
+            size={30}
+            onChange={saveInputText}
+            onKeyDown={pressEnter}
+            value={inputText}
+            className="chat-input"
+        />
+
+        <button className="send-button" onClick={sendMessage}>Send</button>
+        <button className='clear-button' onClick={clearMessages}>Clear</button>
+    </div>
+);
 }
 
 export default ChatInput;

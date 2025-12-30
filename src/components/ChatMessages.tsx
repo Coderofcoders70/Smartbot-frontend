@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
-import './ChatMessages.css'
-import { useRef, useEffect } from 'react'
-import { ChatMessage } from './ChatMessage';
+import './ChatMessages.css';
+import { useRef, useEffect } from 'react';
+import { ChatMessage } from './ChatMessage';;
 
 function useAutoScroll(dependencies: React.DependencyList = []) {
 

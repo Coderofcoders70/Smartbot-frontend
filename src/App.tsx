@@ -11,6 +11,10 @@ type ChatSession = {
   createdAt: number;
 };
 
+type UserProfile = {
+  name: string | null;
+};
+
 function App() {
 
   const [isLoading, setIsLoading] = useState(false);
@@ -20,6 +24,18 @@ function App() {
       return stored ? JSON.parse(stored) : [];
     } catch {
       return [];
+    }
+  });
+
+  const [userProfile, setUserProfile] = useState<UserProfile>(() => {
+
+    try {
+      const storedProfile = localStorage.getItem('userProfile');
+      return storedProfile ? JSON.parse(storedProfile) : { name: null };
+
+    } catch (error) {
+      console.error("Error in parsing user-profile from localStorage:", error);
+      return { name: null };
     }
   });
 
@@ -83,7 +99,6 @@ function App() {
     setChatSessions((prev) => {
       const updated = prev.filter((s) => s.id !== sessionId);
 
-      // If deleting the active chat, switch safely
       if (sessionId === currentSessionId) {
         setCurrentSessionId(updated.length ? updated[0].id : null);
       }
@@ -95,6 +110,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem('chatSessions', JSON.stringify(chatSessions));
   }, [chatSessions]);
+
+  useEffect(() => {
+    localStorage.setItem('userProfile', JSON.stringify(userProfile));
+  }, [userProfile]);
 
   let total = null;
   const num = total += chatMessages.length;
@@ -124,6 +143,8 @@ function App() {
           setChatMessages={updateCurrentSessionMessages}
           isLoading={isLoading}
           setIsLoading={setIsLoading}
+          userProfile={userProfile}
+          setUserProfile={setUserProfile}
           ensureActiveSession={ensureActiveSession}
         />
       </div>
