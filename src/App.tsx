@@ -5,6 +5,8 @@ import ChatInput from './components/ChatInput';
 import { LuMoon, LuSun } from 'react-icons/lu';
 import ChatHistory from './components/ChatHistory';
 import ChatMessages from './components/ChatMessages';
+import DarkSnowBackground from './components/DarkSnowBackground';
+import EmptyChatAnimation from './components/EmptyChatAnimation';
 
 type ChatSession = {
   id: string;
@@ -182,11 +184,6 @@ function App() {
           />
         )}
 
-        {chatMessages.length === 0 && (
-          <p className="welcomeMessage">Welcome to the chatbot project! Send a message using the textbox below.
-          </p>
-        )}
-
         <ChatHistory
           sessions={filteredSessions}
           currentSessionId={currentSessionId}
@@ -204,19 +201,33 @@ function App() {
           isOpen={isSidebarOpen}
         />
 
-        <ChatMessages
-          chatMessages={chatMessages}
-        />
+        <div className='chat-main'>
+          {chatMessages.length === 0 && (
+            <div className="chat-background">
+              {theme === 'dark' ? (
+                <DarkSnowBackground />
+              ) : (
+                <EmptyChatAnimation theme="light" />
+              )}
+            </div>
+          )}
 
-        <ChatInput
-          chatMessages={chatMessages}
-          setChatMessages={updateCurrentSessionMessages}
-          isLoading={isLoading}
-          setIsLoading={setIsLoading}
-          userProfile={userProfile}
-          setUserProfile={setUserProfile}
-          ensureActiveSession={ensureActiveSession}
-        />
+          <div className="chat-content">
+            <ChatMessages
+              chatMessages={chatMessages}
+            />
+
+            <ChatInput
+              chatMessages={chatMessages}
+              setChatMessages={updateCurrentSessionMessages}
+              isLoading={isLoading}
+              setIsLoading={setIsLoading}
+              userProfile={userProfile}
+              setUserProfile={setUserProfile}
+              ensureActiveSession={ensureActiveSession}
+            />
+          </div>
+        </div>
       </div>
     </>
   );

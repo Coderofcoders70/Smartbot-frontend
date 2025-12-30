@@ -1,6 +1,7 @@
 import './ChatInput.css';
 import { BACKEND_URL } from '../config';
 import { useState, type JSX } from 'react';
+import { LuSend, LuTrash2 } from 'react-icons/lu';
 
 type ChatMessage = {
     id: string;
@@ -104,83 +105,94 @@ function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoading, use
                 },
             ]);
 
+            setInputText('');
+            setIsLoading(false);
+            return;
+        }
+
+        const newChatMessages: ChatMessage[] = [
+            ...chatMessages,
+            {
+                id: crypto.randomUUID(),
+                message: inputText,
+                sender: "user",
+            },
+            {
+                id: "loading",
+                message: <img className="loadSpinner" src="https://supersimple.dev/images/loading-spinner.gif" />,
+                sender: "robot",
+            }
+        ];
+
+        setChatMessages(newChatMessages);
+
+        async function sendMessageToBackend(message: string): Promise<string> {
+            const response = await fetch(`${BACKEND_URL}/api/chat`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message }),
+            });
+
+            const data = await response.json();
+            return data.reply;
+        }
+
+        const response = await sendMessageToBackend(inputText);
+        setChatMessages([
+            ...newChatMessages.filter((msg) => msg.id !== "loading")
+                .slice(0, newChatMessages.length - 1),
+            {
+                id: crypto.randomUUID(),
+                message: response,
+                sender: "robot",
+            }
+        ]);
+
         setInputText('');
         setIsLoading(false);
-        return;
     }
 
-    const newChatMessages: ChatMessage[] = [
-        ...chatMessages,
-        {
-            id: crypto.randomUUID(),
-            message: inputText,
-            sender: "user",
-        },
-        {
-            id: "loading",
-            message: <img className="loadSpinner" src="https://supersimple.dev/images/loading-spinner.gif" />,
-            sender: "robot",
+    function pressEnter(e: React.KeyboardEvent<HTMLInputElement>) {
+        if (e.key === 'Enter') {
+            sendMessage()
         }
-    ];
-
-    setChatMessages(newChatMessages);
-
-    async function sendMessageToBackend(message: string): Promise<string> {
-        const response = await fetch(`${BACKEND_URL}/api/chat`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ message }),
-        });
-
-        const data = await response.json();
-        return data.reply;
-    }
-
-    const response = await sendMessageToBackend(inputText);
-    setChatMessages([
-        ...newChatMessages.filter((msg) => msg.id !== "loading")
-            .slice(0, newChatMessages.length - 1),
-        {
-            id: crypto.randomUUID(),
-            message: response,
-            sender: "robot",
+        else if (e.key === 'Escape') {
+            setInputText('');
         }
-    ]);
-
-    setInputText('');
-    setIsLoading(false);
-}
-
-function pressEnter(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === 'Enter') {
-        sendMessage()
     }
-    else if (e.key === 'Escape') {
-        setInputText('');
+
+    function clearMessages() {
+        setChatMessages([]);
     }
-}
 
-function clearMessages() {
-    setChatMessages([]);
-}
+    return (
+        <div className="chat-input-container">
+            <input
+                placeholder="Send a message to the Chatbot"
+                size={30}
+                onChange={saveInputText}
+                onKeyDown={pressEnter}
+                value={inputText}
+                className="chat-input"
+            />
 
-return (
-    <div className="chat-input-container">
-        <input
-            placeholder="Send a message to the Chatbot"
-            size={30}
-            onChange={saveInputText}
-            onKeyDown={pressEnter}
-            value={inputText}
-            className="chat-input"
-        />
+            <button
+                className="send-button"
+                onClick={sendMessage}
+                aria-label='Send message'>
+                <LuSend size={18} />
+            </button>
 
-        <button className="send-button" onClick={sendMessage}>Send</button>
-        <button className='clear-button' onClick={clearMessages}>Clear</button>
-    </div>
-);
+            <button
+                className='clear-button'
+                onClick={clearMessages}
+                aria-label='Clear chat'>
+                <LuTrash2 size={18} />
+            </button>
+        </div>
+    );
 }
 
 export default ChatInput;
