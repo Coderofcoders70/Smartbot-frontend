@@ -1,4 +1,5 @@
 import './App.css';
+import { LuMenu } from 'react-icons/lu';
 import { useEffect, useState } from 'react';
 import ChatInput from './components/ChatInput';
 import ChatHistory from './components/ChatHistory';
@@ -18,6 +19,9 @@ type UserProfile = {
 function App() {
 
   const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   const [chatSessions, setChatSessions] = useState<ChatSession[]>(() => {
     try {
       const stored = localStorage.getItem('chatSessions');
@@ -37,6 +41,19 @@ function App() {
       console.error("Error in parsing user-profile from localStorage:", error);
       return { name: null };
     }
+  });
+
+  const filteredSessions = chatSessions.filter((session) => {
+    const query = searchQuery.toLowerCase();
+
+    if (session.title.toLowerCase().includes(query)) {
+      return true;
+    }
+
+    return session.messages.some((msg: any) =>
+      typeof msg.message === 'string' &&
+      msg.message.toLowerCase().includes(query)
+    );
   });
 
   // This function will help us to generate title in the history chats:-
@@ -125,13 +142,42 @@ function App() {
       <title>{title}</title>
 
       <div className="app-container">
+
+        <button
+          className="sidebar-toggle"
+          onClick={() => setIsSidebarOpen(true)}
+          aria-label="Open chat history"
+        >
+          <LuMenu size={22} />
+        </button>
+
+        {isSidebarOpen && (
+          <div
+            className="sidebar-overlay"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
+
         {chatMessages.length === 0 && (
           <p className="welcomeMessage">Welcome to the chatbot project! Send a message using the textbox below.
           </p>
         )}
 
         <ChatHistory
+          sessions={filteredSessions}
+          currentSessionId={currentSessionId}
+          onSelectSession={(id) => {
+            setCurrentSessionId(id);
+            setIsSidebarOpen(false); 
+          }}
+          onNewChat={() => {
+            createNewSession();
+            setIsSidebarOpen(false);
+          }}
           onDeleteSession={deleteSession}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          isOpen={isSidebarOpen}
         />
 
         <ChatMessages

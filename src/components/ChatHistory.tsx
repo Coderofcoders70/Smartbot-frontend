@@ -57,7 +57,7 @@ function ChatHistory({ sessions, currentSessionId, onSelectSession, onNewChat, o
                         <button
                             className="delete-chat-btn"
                             onClick={(e) => {
-                                e.stopPropagation(); // VERY IMPORTANT
+                                e.stopPropagation(); // It is important to add it here
                                 onDeleteSession(session.id);
                             }}
                             aria-label="Delete chat"

@@ -76,7 +76,7 @@
 }
 
 .delete-chat-btn:hover {
-  color: #ef4444; /* soft red */
+  color: #ef4444; 
 }
 
 @media (max-width: 1024px) {
