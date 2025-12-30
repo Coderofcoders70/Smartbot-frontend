@@ -2,6 +2,7 @@ import './App.css';
 import { LuMenu } from 'react-icons/lu';
 import { useEffect, useState } from 'react';
 import ChatInput from './components/ChatInput';
+import { LuMoon, LuSun } from 'react-icons/lu';
 import ChatHistory from './components/ChatHistory';
 import ChatMessages from './components/ChatMessages';
 
@@ -42,6 +43,21 @@ function App() {
       return { name: null };
     }
   });
+
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const storedTheme = localStorage.getItem('theme');
+    return storedTheme === 'dark' ? 'dark' : 'light';
+  });
+
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
+
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   const filteredSessions = chatSessions.filter((session) => {
     const query = searchQuery.toLowerCase();
@@ -144,6 +160,14 @@ function App() {
       <div className="app-container">
 
         <button
+          className="theme-toggle"
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          aria-label="Toggle theme"
+        >
+          {theme === 'dark' ? <LuSun size={20} /> : <LuMoon size={20} />}
+        </button>
+
+        <button
           className="sidebar-toggle"
           onClick={() => setIsSidebarOpen(true)}
           aria-label="Open chat history"
@@ -168,7 +192,7 @@ function App() {
           currentSessionId={currentSessionId}
           onSelectSession={(id) => {
             setCurrentSessionId(id);
-            setIsSidebarOpen(false); 
+            setIsSidebarOpen(false);
           }}
           onNewChat={() => {
             createNewSession();

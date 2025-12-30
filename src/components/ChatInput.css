@@ -1,28 +1,70 @@
-.send-button, .clear-button{
-  background-color: rgb(25, 135, 84);
-  color: white;
-  padding: 12px 20px;
+.send-button,
+.clear-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--accent);
+  color: #fff;
+  width: 42px;
+  height: 42px;
+  padding: 10px;
   border: none;
   border-radius: 10px;
-  margin-left: 10px;
+  margin-left: 5px;
   font-size: 15px;
   cursor: pointer;
 }
 
-.chat-input{
-  padding: 12px 15px;
+.chat-input-container input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  font-size: 16px;
+  border-radius: 13px;
+}
+
+.chat-input {
+  flex: 1;
+  padding: 12px 14px;
   border-radius: 10px;
-  border-width: 1px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-chat);
+  color: var(--text-primary);
   font-size: 15px;
-  flex-grow: 1;
 }
 
-.chat-input-container{
+.chat-input::placeholder {
+  color: var(--text-secondary);
+}
+
+.chat-input-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
   display: flex;
-  margin-bottom: 50px;
+  gap: 10px;
+  padding: 14px;
+
+  background-color: var(--bg-chat);
+  border-top: 1px solid var(--border-color);
+  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.04);
+
+  z-index: 20;
 }
 
-.clear-button{
+.clear-button {
   background-color: rgb(212, 209, 209);
   color: black;
+}
+
+@media (max-width: 600px) {
+  .chat-input-container {
+    padding: 10px;
+  }
+
+  .chat-input-container input {
+    font-size: 15px;
+  }
 }

@@ -1,12 +1,41 @@
-*{
+* {
   box-sizing: border-box;
 }
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
 }
 
-body{
+:root {
+  --bg-main: #f7f9fb;
+  --bg-chat: #ffffff;
+  --bg-sidebar: rgba(255, 255, 255, 0.65);
+
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+
+  --border-color: rgba(0, 0, 0, 0.08);
+
+  --accent: #14b8a6;
+  --glass-blur: blur(14px);
+}
+
+.dark {
+  --bg-main: #0b1220;
+  --bg-chat: #0f172a;
+  --bg-sidebar: rgba(15, 23, 42, 0.7);
+
+  --text-primary: #e5e7eb;
+  --text-secondary: #9ca3af;
+
+  --border-color: rgba(255, 255, 255, 0.08);
+
+  --accent: #14b8a6;
+}
+
+body {
   margin: 0;
   overflow: hidden;
 }
