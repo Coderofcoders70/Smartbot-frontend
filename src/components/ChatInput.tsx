@@ -1,6 +1,6 @@
-import './ChatInput.css'
-import { Chatbot } from 'supersimpledev'
-import { useState, type JSX } from 'react'
+import './ChatInput.css';
+import { BACKEND_URL } from '../config';
+import { useState, type JSX } from 'react';
 
 type ChatMessage = {
     id: string;
@@ -13,22 +13,84 @@ type ChatInputProps = {
     setChatMessages: (chatMessages: ChatMessage[]) => void;
     isLoading: boolean;
     setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    ensureActiveSession: () => void;
 }
 
-function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoading }: ChatInputProps) {
+function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoading, ensureActiveSession }: ChatInputProps) {
     const [inputText, setInputText] = useState('');
 
     function saveInputText(e: React.ChangeEvent<HTMLInputElement>) {
         setInputText(e.target.value);
     }
 
+    function extractName(message: string): string | null {
+        const patterns = [
+            /my name (\w+)/i,
+            /my name is (\w+)/i,
+            /i am (\w+)/i,
+            /call me (\w+)/i,
+            /remember my name (\w+)/i,
+        ];
+
+        for (const pattern of patterns) {
+            const match = message.match(pattern);
+            if (match) return match[1];
+        }
+        return null;
+    }
+
     async function sendMessage() {
+
+        ensureActiveSession();
+
+        if (!chatMessages || chatMessages.length === 0) {
+            setChatMessages([]); // To create new chat
+        }
 
         if (isLoading || inputText.trim() === "") {
             return alert("Please check again");
         }
 
         setIsLoading(true);
+
+        const extractedName = extractName(inputText);
+
+        if (extractedName) {
+
+            setChatMessages([
+                ...chatMessages,
+                {
+                    id: crypto.randomUUID(),
+                    message: inputText,
+                    sender: "user",
+                },
+                {
+                    id: crypto.randomUUID(),
+                    message: `Got it, ${extractedName}. I’ll remember that.`,
+                    sender: "robot",
+                },
+            ]);
+
+            setInputText('');
+            setIsLoading(false);
+            return;
+        }
+
+        if (/do you remember my name/i.test(inputText) || /what is my name/i.test(inputText) || /my name/i.test(inputText) || /tell me my name/i.test(inputText)) {
+
+            setChatMessages([
+                ...chatMessages,
+                {
+                    id: crypto.randomUUID(),
+                    message: inputText,
+                    sender: "user",
+                },
+            ]);
+
+            setInputText('');
+            setIsLoading(false);
+            return;
+        }
 
         const newChatMessages: ChatMessage[] = [
             ...chatMessages,
@@ -46,7 +108,20 @@ function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoading }: C
 
         setChatMessages(newChatMessages);
 
-        const response = await Chatbot.getResponseAsync(inputText);
+        async function sendMessageToBackend(message: string): Promise<string> {
+            const response = await fetch(`${BACKEND_URL}/api/chat`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ message }),
+            });
+
+            const data = await response.json();
+            return data.reply;
+        }
+
+        const response = await sendMessageToBackend(inputText);
         setChatMessages([
             ...newChatMessages.filter((msg) => msg.id !== "loading")
                 .slice(0, newChatMessages.length - 1),
