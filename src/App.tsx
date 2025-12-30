@@ -150,14 +150,14 @@ function App() {
     localStorage.setItem('userProfile', JSON.stringify(userProfile));
   }, [userProfile]);
 
-  let total = null;
+  let total = 0;
   const num = total += chatMessages.length;
   const title = `${num} Messages`;
 
   return (
     <>
       <link rel="icon" type="image/svg+xml" href='src/assets/robot.png' />
-      <title>{title}</title>
+      <title>{chatMessages.length != 0 ? title : "Smartbot" }</title>
 
       <div className="app-container">
 

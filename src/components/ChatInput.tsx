@@ -37,6 +37,8 @@ function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoading, use
             /i am (\w+)/i,
             /call me (\w+)/i,
             /remember my name (\w+)/i,
+            /mera naam hai (\w+)/i,
+            /mera naam (\w+)/i,
         ];
 
         for (const pattern of patterns) {
@@ -85,7 +87,7 @@ function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoading, use
             return;
         }
 
-        if (/do you remember my name/i.test(inputText) || /what is my name/i.test(inputText) || /my name/i.test(inputText) || /tell me my name/i.test(inputText)) {
+        if (/do you remember my name/i.test(inputText) || /what is my name/i.test(inputText) || /my name/i.test(inputText) || /tell me my name/i.test(inputText) || /kya hai mera naam/i.test(inputText) || /mera naam kya hai /i.test(inputText) || /kya naam/i.test(inputText)) {
 
             const reply = userProfile.name
                 ? `Yes — you’re ${userProfile.name}.`
@@ -170,7 +172,7 @@ function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoading, use
     return (
         <div className="chat-input-container">
             <input
-                placeholder="Send a message to the Chatbot"
+                placeholder="Start asking..."
                 size={30}
                 onChange={saveInputText}
                 onKeyDown={pressEnter}
