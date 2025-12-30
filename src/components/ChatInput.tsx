@@ -89,10 +89,9 @@ function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoading, use
 
         if (/do you remember my name/i.test(inputText) || /what is my name/i.test(inputText) || /my name/i.test(inputText) || /tell me my name/i.test(inputText) || /kya hai mera naam/i.test(inputText) || /mera naam kya hai /i.test(inputText) || /kya naam/i.test(inputText)) {
 
-            const reply = (userProfile.name
+            const reply = userProfile.name
                 ? `Yes — you’re ${userProfile.name}.`
-                : "I don’t think you’ve told me your name yet.")
-                || `Haan aapka naam ${userProfile.name}`;
+                : "I don’t think you’ve told me your name yet.";
 
             setChatMessages([
                 ...chatMessages,
