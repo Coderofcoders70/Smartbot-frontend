@@ -23,28 +23,20 @@
   border-radius: 14px;
   padding: 14px 18px;
   max-width: 70%;
-  white-space: pre-line;
   line-height: 1.5;
   color: var(--text-primary);
 }
 
 .markdown-content p {
-  margin: 0;
   white-space: pre-wrap;
 }
 
-.markdown-content p:not(:last-child) {
-  margin-bottom: 8px;
-}
-
 .markdown-content ul, .markdown-content ol {
-  margin: 8px 0;
   padding-left: 20px;
 }
 
 .markdown-content code {
   background-color: rgba(255, 255, 255, 0.15);
-  padding: 2px 5px;
   border-radius: 4px;
   font-family: monospace;
 }
