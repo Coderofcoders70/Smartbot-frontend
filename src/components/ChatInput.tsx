@@ -32,13 +32,11 @@ function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoading, use
 
     function extractName(message: string): string | null {
         const patterns = [
-            /my name (\w+)/i,
             /my name is (\w+)/i,
             /i am (\w+)/i,
             /call me (\w+)/i,
             /remember my name (\w+)/i,
             /mera naam hai (\w+)/i,
-            /mera naam (\w+)/i,
         ];
 
         for (const pattern of patterns) {
@@ -49,37 +47,55 @@ function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoading, use
     }
 
     async function sendMessage() {
+        const trimmedInput = inputText.trim();
+
+        if (trimmedInput === "") return;
+
+        if (isLoading) return;
 
         ensureActiveSession();
-
-        if (!chatMessages || chatMessages.length === 0) {
-            setChatMessages([]); // To create new chat
-        }
-
-        if (isLoading || inputText.trim() === "") {
-            return alert("Please check again");
-        }
-
         setIsLoading(true);
 
-        const extractedName = extractName(inputText);
+        const userMessageId = crypto.randomUUID();
+        const extractedName = extractName(trimmedInput);
 
         if (extractedName) {
-
             setUserProfile({ name: extractedName });
+            const newMsgs: ChatMessage[] = [
+                ...chatMessages,
+                { 
+                    id: userMessageId, 
+                    message: trimmedInput, 
+                    sender: "user" 
+                },
+                { 
+                    id: crypto.randomUUID(), 
+                    message: `Got it, ${extractedName}. I’ll remember that.`, 
+                    sender: "robot" 
+                }
+            ];
 
+            setChatMessages(newMsgs);
+            setInputText('');
+            setIsLoading(false);
+            return;
+        }
+
+        if (/do you remember my name/i.test(inputText) || /what is my name/i.test(inputText) || /my name/i.test(inputText) || /tell me my name/i.test(inputText) || /mera naam kya hai /i.test(inputText)) {
+            
+            const reply = userProfile.name ? `Yes — you’re ${userProfile.name}.` : "I don’t think you’ve told me your name yet.";
             setChatMessages([
                 ...chatMessages,
-                {
-                    id: crypto.randomUUID(),
-                    message: inputText,
-                    sender: "user",
+                { 
+                    id: userMessageId, 
+                    message: trimmedInput, 
+                    sender: "user" 
                 },
-                {
-                    id: crypto.randomUUID(),
-                    message: `Got it, ${extractedName}. I’ll remember that.`,
-                    sender: "robot",
-                },
+                { 
+                    id: crypto.randomUUID(), 
+                    message: reply, 
+                    sender: "robot" 
+                }
             ]);
 
             setInputText('');
@@ -87,73 +103,52 @@ function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoading, use
             return;
         }
 
-        if (/do you remember my name/i.test(inputText) || /what is my name/i.test(inputText) || /my name/i.test(inputText) || /tell me my name/i.test(inputText) || /kya hai mera naam/i.test(inputText) || /mera naam kya hai /i.test(inputText) || /kya naam/i.test(inputText)) {
-
-            const reply = userProfile.name
-                ? `Yes — you’re ${userProfile.name}.`
-                : "I don’t think you’ve told me your name yet.";
-
-            setChatMessages([
-                ...chatMessages,
-                {
-                    id: crypto.randomUUID(),
-                    message: inputText,
-                    sender: "user",
-                },
-                {
-                    id: crypto.randomUUID(),
-                    message: reply,
-                    sender: "robot",
-                },
-            ]);
-
-            setInputText('');
-            setIsLoading(false);
-            return;
-        }
-
-        const newChatMessages: ChatMessage[] = [
+        const tempMessages: ChatMessage[] = [
             ...chatMessages,
-            {
-                id: crypto.randomUUID(),
-                message: inputText,
-                sender: "user",
+            { 
+                id: userMessageId, 
+                message: trimmedInput, 
+                sender: "user" 
             },
-            {
-                id: "loading",
-                message: <img className="loadSpinner" src="https://supersimple.dev/images/loading-spinner.gif" />,
-                sender: "robot",
+            { 
+                id: "loading-spinner", // API calling logic here 
+                message: <img className="loadSpinner" src="https://supersimple.dev/images/loading-spinner.gif" />, 
+                sender: "robot" 
             }
         ];
 
-        setChatMessages(newChatMessages);
+        setChatMessages(tempMessages);
+        setInputText(''); 
 
-        async function sendMessageToBackend(message: string): Promise<string> {
+        try {
             const response = await fetch(`${BACKEND_URL}/api/chat`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ message }),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: trimmedInput }),
             });
-
             const data = await response.json();
-            return data.reply;
+
+            setChatMessages([
+                ...tempMessages.filter(m => m.id !== "loading-spinner"),
+                { 
+                    id: crypto.randomUUID(), 
+                    message: data.reply, 
+                    sender: "robot" 
+                }
+            ]);
+        }catch (error) {
+            console.error("Chat Error:", error);
+            setChatMessages([
+                ...tempMessages.filter(m => m.id !== "loading-spinner"),
+                { 
+                    id: crypto.randomUUID(), 
+                    message: "Sorry, I encountered with connectivity issue. Please try again.", 
+                    sender: "robot" 
+                }
+            ]);
+        } finally {
+            setIsLoading(false);
         }
-
-        const response = await sendMessageToBackend(inputText);
-        setChatMessages([
-            ...newChatMessages.filter((msg) => msg.id !== "loading")
-                .slice(0, newChatMessages.length - 1),
-            {
-                id: crypto.randomUUID(),
-                message: response,
-                sender: "robot",
-            }
-        ]);
-
-        setInputText('');
-        setIsLoading(false);
     }
 
     function pressEnter(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -172,7 +167,7 @@ function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoading, use
     return (
         <div className="chat-input-container">
             <input
-                placeholder="Start asking..."
+                placeholder={chatMessages.length === 0 ? "Create chat..." : "Start asking..."}
                 size={30}
                 onChange={saveInputText}
                 onKeyDown={pressEnter}

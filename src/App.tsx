@@ -74,13 +74,6 @@ function App() {
     );
   });
 
-  // This function will help us to generate title in the history chats:-
-  function generateChatTitle(message: string) {
-    return message.length > 30
-      ? message.slice(0, 30) + '…'
-      : message;
-  }
-
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(
     chatSessions.length ? chatSessions[0].id : null
   );
@@ -90,6 +83,13 @@ function App() {
   );
 
   const chatMessages = currentSession ? currentSession.messages : [];
+
+  // This function will help us to generate title in the history chats:-
+  function generateChatTitle(message: string) {
+    return message.length > 30
+      ? message.slice(0, 30) + '…'
+      : message;
+  }
 
   function ensureActiveSession() {
     if (!currentSessionId) {
@@ -107,6 +107,10 @@ function App() {
 
     setChatSessions((prev) => [newSession, ...prev]);
     setCurrentSessionId(newSession.id);
+
+    if (newSession.id) {
+      return alert("New chat created succsessfully! Start asking...");
+    }
   }
 
   function updateCurrentSessionMessages(messages: any[]) {
@@ -157,7 +161,7 @@ function App() {
   return (
     <>
       <link rel="icon" type="image/svg+xml" href='src/assets/robot.png' />
-      <title>{chatMessages.length != 0 ? title : "Smartbot" }</title>
+      <title>{chatMessages.length != 0 ? title : "Smartbot"}</title>
 
       <div className="app-container">
 
