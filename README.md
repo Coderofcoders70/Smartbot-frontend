@@ -6,6 +6,7 @@ Instead of being just an AI response generator, Smartbot aims to feel like a com
 Link: https://smartbot-museai.vercel.app
 
 💡 Why This Project?
+
 When I first explored AI chat applications, I noticed that most of them focused heavily on generating answers, but overlooked how users interact with conversations over time. One major limitation was the lack of search functionality—once a conversation became long, it was difficult to find an important response again.
 
 I also felt that many AI apps had a static and uninspiring user experience. While they worked technically, they didn’t feel engaging or alive. To address this, I focused on building an interactive UI using animations and thoughtful design choices, so the chatbot feels more like a living assistant rather than just a text box.
