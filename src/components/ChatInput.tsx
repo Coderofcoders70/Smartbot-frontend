@@ -167,7 +167,8 @@ function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoading, use
     return (
         <div className="chat-input-container">
             <input
-                placeholder={chatMessages.length === 0 ? "Create chat..." : "Start asking..."}
+                placeholder={isLoading ? "Bot is thinking..." : "Start asking..."}
+                disabled={isLoading}
                 size={30}
                 onChange={saveInputText}
                 onKeyDown={pressEnter}
@@ -177,6 +178,8 @@ function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoading, use
 
             <button
                 className="send-button"
+                title='Send message (Enter)'
+                disabled={isLoading || !inputText.trim()}
                 onClick={sendMessage}
                 aria-label='Send message'>
                 <LuSend size={18} />
@@ -184,6 +187,7 @@ function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoading, use
 
             <button
                 className='clear-button'
+                title="Clear current chat messages"
                 onClick={clearMessages}
                 aria-label='Clear chat'>
                 <LuTrash2 size={18} />

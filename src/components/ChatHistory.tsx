@@ -33,6 +33,7 @@ function ChatHistory({ sessions, currentSessionId, onSelectSession, onNewChat, o
                 />
                 <button
                     className="add-chat-btn"
+                    title="Create a new chat session"
                     onClick={onNewChat}
                     aria-label="New chat"
                 >
