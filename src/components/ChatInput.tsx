@@ -1,7 +1,7 @@
 import './ChatInput.css';
 import { BACKEND_URL } from '../config';
 import { useState, type JSX } from 'react';
-import { LuSend, LuTrash2 } from 'react-icons/lu';
+import { LuSend } from 'react-icons/lu';
 
 type ChatMessage = {
     id: string;
@@ -160,9 +160,9 @@ function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoading, use
         }
     }
 
-    function clearMessages() {
-        setChatMessages([]);
-    }
+    // function clearMessages() {
+    //     setChatMessages([]);
+    // }
 
     return (
         <div className="chat-input-container">
@@ -185,13 +185,13 @@ function ChatInput({ chatMessages, setChatMessages, isLoading, setIsLoading, use
                 <LuSend size={18} />
             </button>
 
-            <button
+            {/* <button
                 className='clear-button'
                 title="Clear current chat messages"
                 onClick={clearMessages}
                 aria-label='Clear chat'>
                 <LuTrash2 size={18} />
-            </button>
+            </button> */}
         </div>
     );
 }
