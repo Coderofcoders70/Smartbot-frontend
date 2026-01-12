@@ -1,6 +1,6 @@
-🤖 Smartbot - The MuseAi
-Smartbot is a production-ready AI chatbot designed with a strong focus on usability, searchability, and real-world conversation management.
-Instead of being just an AI response generator, Smartbot aims to feel like a complete, interactive product that users can actually enjoy using.
+🤖 MuseChatAI - The MuseAi
+Smartbot chat app is a production-ready AI chatting app designed with a strong focus on usability, searchability, and real-world conversation management.
+Instead of being just an AI response generator, MuseAI aims to feel like a complete, interactive product that users can actually enjoy using.
 
 🔗 Live Demo
 Link: https://smartbot-museai.vercel.app
@@ -74,4 +74,4 @@ Guided onboarding experience for first-time users
 
 📌 Final Note
 
-Smartbot was built as a learning-driven, portfolio-quality project with an emphasis on real-world usability rather than just AI integration. It reflects both technical implementation and product-level thinking.
+MuseAI was built as a learning-driven, portfolio-quality project with an emphasis on real-world usability rather than just AI integration. It reflects both technical implementation and product-level thinking.
